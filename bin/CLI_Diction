@@ -1,0 +1,2 @@
+require_relative '../lib/CLI_Diction'
+Diction::CLI.new.call
