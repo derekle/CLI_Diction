@@ -234,7 +234,7 @@ class Diction::CLI
                 fix = print_suggested(Diction::Scraper.new.getSuggestions(@text), 1, true)
                 if fix == nil
                 ### Leave the word alone
-                    fix = checkword
+                    fix = @text
                 end
                 ### Replace the incorrect word with the corrected spelling
                 holdSentence.map!{|word| word == @text ? fix : word}
