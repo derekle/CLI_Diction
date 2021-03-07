@@ -50,12 +50,5 @@ class Diction::App < Diction::CLI
             return true
         end
     end
-
-    def spellcheck
-        misspellings = Array.new
-        @@inputtxt.each do |x|
-            spellcheck?
-        end
-    end
 end
 
