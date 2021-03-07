@@ -135,12 +135,12 @@ class Diction::CLI
     
     def sentence?(input = @@inputtxt)
         ### Checks if the user's input is a sentence, word, or neither
-        if input.split(" ").length > 1
+        if input.split(" ").length > 2
             puts "========================"
             puts "Sentence detected!"
             return 1
 
-        elsif input.split(" ").length == 1
+        elsif input.split(" ").length <= 2
             if isword? == true
                 puts "========================"
                 puts "Word detected!"
