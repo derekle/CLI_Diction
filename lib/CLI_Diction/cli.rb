@@ -169,7 +169,6 @@ class Diction::CLI
         puts "Dictionary"
         ### Find the object instance associated with the word
         text = Diction::Word.find(@@inputtxt)[0]
-        p text
         ### Check if the word has a definition
         if text.hasDef? == nil
             ### If no definition is found, assume a misspelling and get suggested spellings 
