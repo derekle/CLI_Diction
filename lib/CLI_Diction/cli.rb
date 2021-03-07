@@ -1,18 +1,22 @@
 class Diction::CLI
+    ### Contains fuctions for handling user input and navigating the terminal menus
     @@inputtxt = nil
 
     def call
+        ### Print greeting message
         puts "========================"
         puts "//// CLI DICTION APP ////"
         start
     end
 
     def start
+        ### Print greeting message ask for user text input
         puts "========================"
-        puts "=== Please enter your query: ==="
+        puts "=== Please enter a word or sentence: ==="
         puts "(Press 0 to exit application.)"
         puts "========================"
 
+        ### Saves the user's input for the current session and begin the list_process
         @@inputtxt = gets.delete_suffix!("\n").downcase
         list_process
         puts "Processing..."
@@ -21,11 +25,15 @@ class Diction::CLI
 
 
     def list_process
+        ### Processes the users' input and returns menus based on results
+
+        ### Check if the user's input is valid
         if numcheck? == true
             if @@inputtxt.to_i == 0
                 puts "Exiting..."
                 sleep 1
                 exit
+            ### Hidden debug option which returns each word that has been instantiated into an object
             elsif @@inputtxt.to_i == 1
                 Diction::App.all.each do |x|
                     p x.text
@@ -38,11 +46,15 @@ class Diction::CLI
         elsif alphacheck? == false
             puts "No letters detected. Cannot parse input. Please enter a valid text."
             list_process
+
+        ### If the user's input is a valid word or sentence run the following
         else
+            ### Create new objects from each unique word from the user's input
             @@inputtxt.split(" ").uniq.each do |text|
                 Diction::App.new_from_input(text)
             end
 
+            ### Return menus based on if the user is querying a sentence or a word
             case sentence?
                 when 1
 
@@ -98,6 +110,7 @@ class Diction::CLI
     end
 
     def menuReturn
+        ### Contains the script to return to the main menu if the user types 0
         if gets.to_i == 0
             puts "Returning..."
             sleep (1)
@@ -106,18 +119,22 @@ class Diction::CLI
     end
 
     def isword?
+        ### Calls the scraper class to check Datamuse's API for matching text in its database
         Diction::Scraper.new.isword?(@@inputtxt)
     end
 
     def alphacheck?(input = @@inputtxt)
+        ### Checks if the user's input contains letters
         input.match?(/[[:alpha:]]/)
     end
 
     def numcheck?(input = @@inputtxt)
+        ### Checks if the user's input contains numbers
         input.match?(/[[:digit:]]/)
     end
     
     def sentence?(input = @@inputtxt)
+        ### Checks if the user's input is a sentence, word, or neither
         if input.split(" ").length > 1
             puts "========================"
             puts "Sentence detected!"
@@ -143,15 +160,19 @@ class Diction::CLI
 
 
     def print_dictionary
+        ### Handles lines related to the Dictionary option
         puts "========================"
         puts "Dictionary"
+        ### Find the object instance associated with the word
         text = Diction::App.find(@@inputtxt)[0]
-        p "dictionary text: #{text}"
+        ### Check if the word has a definition
         if text.hasDef? == nil
+            ### If no definition is found, assume a misspelling and get suggested spellings 
             puts "Hm, it looks like there's no definition associated with this word."
             print_suggested(Diction::Scraper.new.getSuggestions(text.text))
         end
         if text.hasDef? == true
+            ### Print a formatted list of defintions
             defs = text.definitions[0].fetch_values("defs").flatten(1)
             defs.each.with_index do |word, index|
                 word.gsub!(/n\t/, "Noun: ")
@@ -167,14 +188,17 @@ class Diction::CLI
     end
 
     def print_thesaurus
+        ### Handles lines related to the Thesaurus option
         puts "========================"
         puts "Thesaurus"
-        text = Diction::App.new_from_input
-
+        ### Find the object instance associated with the word
+        text = Diction::App.find(@@inputtxt)[0]
+        ### Check if the word has any synonyms
         if text.hasSyn? == nil
             puts "Hm, it looks like there are no synonyms associated with this word."
         end
         if text.hasSyn? == true
+            ### Print a formatted list of synonyms
             text.synonyms.each.with_index do |word, index|
                 puts "#{index+1}. #{word.fetch_values("word")[0].capitalize}"
             end
@@ -186,32 +210,41 @@ class Diction::CLI
     end
 
     def print_spellcheck
+        ### Handles lines related to the Spellchecking option
         puts "========================"
         puts "Spellcheck."
+        ### Split the user's input into an array of individual words
         holdSentence = @@inputtxt.split(" ")
         wordCount = 0
+        ### Remove duplicate words to avoid querying twice. Create an array of each unique word to process
         wordstoCheck = holdSentence.uniq
         while wordCount < wordstoCheck.length
-            checkword = wordstoCheck[wordCount]
-            text = Diction::App.find(checkword)[0]
-            @text = text.text
+            ### Store the current word being checked
+            @text = wordstoCheck[wordCount]
+            ### Find the object instance associated with the word
+            text = Diction::App.find(@text)[0]
+            ### Check if the word has a definition
             if text.hasDef? == nil
+                ### If no definition is found, assume a misspelling and get suggested spellings 
                 fix = print_suggested(Diction::Scraper.new.getSuggestions(@text), 1, true)
                 if fix == nil
+                ### Leave the word alone
                     fix = checkword
                 end
-                holdSentence.map!{|word| word == checkword ? fix : word}
+                ### Replace the incorrect word with the corrected spelling
+                holdSentence.map!{|word| word == @text ? fix : word}
             end
             wordCount += 1
         end
         puts "========================"
+        ### Return corrected sentence
         puts holdSentence.join(" ")
         puts "Press 0 to return"
         menuReturn
     end
 
     def gets_page(input, pageNum)
-       
+        ### Handles the retrieval and printing of each page in a list
         #ap parse
         pgtoindx = pageNum-1
         input[pgtoindx].each.with_index do |x, y|
@@ -220,20 +253,26 @@ class Diction::CLI
     end
 
     def print_suggested(input, pageNum = 1, scFlag = false)
+        ### Handles lines related to printing a list of suggested spellings
         puts "========================"
+        ### Check if the function is being called upon by the Spellchecking function
         flag = scFlag
+
         if scFlag == true
             puts "Here are a list of suggested spellings for [#{@text}]. Navigate with left and right arrow keys. Press 0 to return to main menu."
         end
         if scFlag == false
             puts "Here are a list of suggested spellings for [#{@@inputtxt}]. Navigate with left and right arrow keys. Press 0 to return to main menu."
         end
+
+        ### Split suggested spelling results in to groups of 10. Each group makes up a page for the gets_page method
         parse = input.each_slice(10).to_a
         gets_page(parse, pageNum)
 
 
         inputtxt = gets.delete_suffix!("\n")
-
+        
+        ### Input check unique to this submenu
         if numcheck?(inputtxt) == true
             if inputtxt.to_i ==  0 && scFlag == false
                 puts "Returning..."
@@ -256,6 +295,7 @@ class Diction::CLI
                 puts "Please make a valid selection."
                 print_suggested(input)
             end
+        ### Detects arrow keys for navigating pages of results
         elsif inputtxt == "\e[C"
             if pageNum == parse.length
                 print_suggested(input, pageNum, flag)
