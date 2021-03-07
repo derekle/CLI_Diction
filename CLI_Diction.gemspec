@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.description = "Retrieves information for user input text via Datamuse"
   s.authors     = ["Derek Le"]
   s.email       = 'derekle.creative@gmail.com'
-  s.files       = ["lib/CLI_Diction.rb", "lib/CLI_Diction/cli.rb", "lib/CLI_Diction/scraper.rb", "lib/CLI_Diction/app.rb", "config/environment.rb"]
+  s.files       = ["lib/CLI_Diction.rb", "lib/CLI_Diction/cli.rb", "lib/CLI_Diction/scraper.rb", "lib/CLI_Diction/word.rb", "config/environment.rb"]
   s.license     = 'MIT'
   s.homepage    = 'https://rubygems.org/gems/CLI_Diction'
   s.executables << 'CLI_Diction'

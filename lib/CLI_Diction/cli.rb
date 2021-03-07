@@ -35,7 +35,7 @@ class Diction::CLI
                 exit
             ### Hidden debug option which returns each word that has been instantiated into an object
             elsif @@inputtxt.to_i == 1
-                Diction::App.all.each do |x|
+                Diction::Word.all.each do |x|
                     p x.text
                 end
                 start
@@ -51,7 +51,7 @@ class Diction::CLI
         else
             ### Create new objects from each unique word from the user's input
             @@inputtxt.split(" ").uniq.each do |text|
-                Diction::App.new_from_input(text)
+                Diction::Word.new_from_input(text)
             end
 
             ### Return menus based on if the user is querying a sentence or a word
@@ -164,7 +164,7 @@ class Diction::CLI
         puts "========================"
         puts "Dictionary"
         ### Find the object instance associated with the word
-        text = Diction::App.find(@@inputtxt)[0]
+        text = Diction::Word.find(@@inputtxt)[0]
         ### Check if the word has a definition
         if text.hasDef? == nil
             ### If no definition is found, assume a misspelling and get suggested spellings 
@@ -192,7 +192,7 @@ class Diction::CLI
         puts "========================"
         puts "Thesaurus"
         ### Find the object instance associated with the word
-        text = Diction::App.find(@@inputtxt)[0]
+        text = Diction::Word.find(@@inputtxt)[0]
         ### Check if the word has any synonyms
         if text.hasSyn? == nil
             puts "Hm, it looks like there are no synonyms associated with this word."
@@ -222,7 +222,7 @@ class Diction::CLI
             ### Store the current word being checked
             @text = wordstoCheck[wordCount]
             ### Find the object instance associated with the word
-            text = Diction::App.find(@text)[0]
+            text = Diction::Word.find(@text)[0]
             ### Check if the word has a definition
             if text.hasDef? == nil
                 ### If no definition is found, assume a misspelling and get suggested spellings 

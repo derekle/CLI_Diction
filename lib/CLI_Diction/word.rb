@@ -1,4 +1,4 @@
-class Diction::App < Diction::CLI
+class Diction::Word < Diction::CLI
     ### Contains functions for retrieving the word's attributes
     attr_accessor :text, :definitions, :synonyms
 
