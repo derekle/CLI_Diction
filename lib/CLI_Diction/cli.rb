@@ -49,14 +49,15 @@ class Diction::CLI
 
         ### If the user's input is a valid word or sentence run the following
         else
-            ### Create new objects from each unique word from the user's input
-            @@inputtxt.split(" ").uniq.each do |text|
-                Diction::Word.new_from_input(text)
-            end
+
 
             ### Return menus based on if the user is querying a sentence or a word
             case sentence?
                 when 1
+                    ### Create new objects from each unique word from the user's input
+                    @@inputtxt.split(" ").uniq.each do |text|
+                        Diction::Word.new_from_input(text)
+                    end
 
                     puts "What would you like to do?"
                     puts "1. Spellcheck"
@@ -79,6 +80,9 @@ class Diction::CLI
                     end
 
                 when 2
+
+                        Diction::Word.new_from_input(@@inputtxt)
+                        
                         puts "What would you like to do?"
                         puts "1. Dictionary"
                         puts "2. Thesaurus"
@@ -165,6 +169,7 @@ class Diction::CLI
         puts "Dictionary"
         ### Find the object instance associated with the word
         text = Diction::Word.find(@@inputtxt)[0]
+        p text
         ### Check if the word has a definition
         if text.hasDef? == nil
             ### If no definition is found, assume a misspelling and get suggested spellings 
@@ -259,7 +264,7 @@ class Diction::CLI
         flag = scFlag
 
         if scFlag == true
-            puts "Here are a list of suggested spellings for [#{@text}]. Navigate with left and right arrow keys. Press 0 to return to main menu."
+            puts "Here are a list of suggested spellings for [#{@text}]. Navigate with left and right arrow keys. Press 0 to skip this word."
         end
         if scFlag == false
             puts "Here are a list of suggested spellings for [#{@@inputtxt}]. Navigate with left and right arrow keys. Press 0 to return to main menu."
@@ -286,6 +291,7 @@ class Diction::CLI
                 @@inputtxt = input[inputtxt.to_i-1]
                 puts "Processing suggested word: #{@@inputtxt}"
                 if scFlag == true
+                    Diction::Word.new_from_input(@@inputtxt)
                     return @@inputtxt
                 end
                 if scFlag == false
